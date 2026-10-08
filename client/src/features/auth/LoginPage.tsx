@@ -5,6 +5,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useLoginMutation } from '../../api/authApi';
 import { parseApiError } from '../../api/errors';
 import { useAppSelector } from '../../app/hooks';
+import { FieldError, FormAlert, fieldClass, labelClass } from '../../components/FormField';
 import Icon from '../../components/Icon';
 import { loginSchema, type LoginFormValues } from '../../schemas/login';
 
@@ -12,22 +13,6 @@ const FORM_FIELDS: ReadonlyArray<keyof LoginFormValues> = ['email', 'password', 
 
 const isFormField = (field: string | undefined): field is keyof LoginFormValues =>
   FORM_FIELDS.includes(field as keyof LoginFormValues);
-
-const fieldClass = (hasError: boolean, hasRightIcon = false) =>
-  `w-full pl-10 ${hasRightIcon ? 'pr-10' : 'pr-4'} py-3 border rounded-xl text-sm text-text focus:outline-none focus:ring-2 ${
-    hasError
-      ? 'border-danger/40 focus:ring-danger/20'
-      : 'border-border focus:border-primary focus:ring-primary/20 bg-surface'
-  }`;
-
-function FieldError({ id, message }: { id: string; message: string }) {
-  return (
-    <p id={id} className="mt-1.5 flex items-center gap-1 text-xs text-danger">
-      <Icon name="exclamation" size={14} strokeWidth={0.5} />
-      {message}
-    </p>
-  );
-}
 
 export default function LoginPage() {
   const status = useAppSelector((state) => state.auth.status);
@@ -79,18 +64,12 @@ export default function LoginPage() {
         </div>
 
         {formError && (
-          <div
-            role="alert"
-            className="mb-5 flex items-center gap-2 rounded-xl border border-danger/30 bg-danger/10 px-3 py-2.5 text-sm text-danger"
-          >
-            <Icon name="exclamation" size={16} />
-            {formError}
-          </div>
+          <FormAlert message={formError} />
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <div className="mb-5">
-            <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-text">
+            <label htmlFor="email" className={labelClass}>
               Email Address
             </label>
             <div className="relative">
@@ -112,7 +91,7 @@ export default function LoginPage() {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-text">
+            <label htmlFor="password" className={labelClass}>
               Password
             </label>
             <div className="relative">
@@ -126,7 +105,7 @@ export default function LoginPage() {
                 placeholder="Enter your password"
                 aria-invalid={errors.password ? 'true' : 'false'}
                 aria-describedby={errors.password ? 'password-error' : undefined}
-                className={fieldClass(!!errors.password, true)}
+                className={fieldClass(!!errors.password, { rightIcon: true })}
                 {...register('password')}
               />
               <button

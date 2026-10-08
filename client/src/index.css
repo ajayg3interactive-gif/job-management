@@ -29,6 +29,7 @@
   --color-accent: var(--accent);
   --color-on-primary: var(--on-primary);
   --color-danger: var(--danger);
+  --color-overlay: var(--overlay);
 }
 
 :root {
@@ -50,6 +51,7 @@
   --border: color-mix(in srgb, var(--background), var(--text) 10%);
   --text-muted: color-mix(in srgb, var(--text), var(--background) 45%);
   --on-primary: #ffffff;
+  --overlay: rgb(0 0 0 / 0.5);
 }
 
 .dark {
@@ -63,6 +65,7 @@
   --border: color-mix(in srgb, var(--background), var(--text) 14%);
   --text-muted: color-mix(in srgb, var(--text), var(--background) 40%);
   --on-primary: #171712;
+  --overlay: rgb(0 0 0 / 0.65);
 }
 
 html,

@@ -1,32 +1,54 @@
+import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import { useLogoutMutation } from '../api/authApi';
-import { useAppSelector } from '../app/hooks';
+import Icon from './Icon';
+import Sidebar from './Sidebar';
 
 export default function AppLayout() {
-  const user = useAppSelector((state) => state.auth.user);
-  const [logout, { isLoading }] = useLogoutMutation();
+  // Mobile drawer state. On desktop (md and up) the sidebar is always visible.
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const closeSidebar = () => setIsSidebarOpen(false);
+
+  useEffect(() => {
+    if (!isSidebarOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsSidebarOpen(false);
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [isSidebarOpen]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-surface">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-          <span className="text-base font-semibold text-text">Job Management</span>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-text">{user?.name}</span>
-            <button
-              type="button"
-              onClick={() => logout()}
-              disabled={isLoading}
-              className="rounded-md border border-border px-3 py-1.5 text-sm text-text hover:bg-background disabled:opacity-60"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </header>
-      <main className="mx-auto max-w-6xl px-4 py-6">
-        <Outlet />
-      </main>
+    <div className="relative flex h-screen overflow-hidden bg-background">
+      <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+
+      {isSidebarOpen && (
+        <div
+          data-testid="sidebar-overlay"
+          className="fixed inset-0 z-40 bg-overlay md:hidden"
+          onClick={closeSidebar}
+          aria-hidden="true"
+        />
+      )}
+
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+        <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border bg-surface px-4 md:hidden">
+          <button
+            type="button"
+            onClick={() => setIsSidebarOpen((open) => !open)}
+            aria-label="Open menu"
+            aria-controls="app-sidebar"
+            aria-expanded={isSidebarOpen}
+            className="-ml-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-text/5"
+          >
+            <Icon name="menu" size={22} />
+          </button>
+          <p className="text-sm font-semibold text-text">Job Management</p>
+        </header>
+
+        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-background px-4 py-6 sm:px-6">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }

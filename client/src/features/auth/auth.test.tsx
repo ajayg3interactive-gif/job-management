@@ -158,7 +158,7 @@ describe('route protection', () => {
     renderApp('/');
 
     const user = userEvent.setup();
-    await user.click(await screen.findByRole('button', { name: 'Logout' }));
+    await user.click(await screen.findByRole('button', { name: 'Log out' }));
 
     expect(await screen.findByRole('button', { name: 'Sign In' })).toBeInTheDocument();
   });
@@ -168,7 +168,7 @@ describe('route protection', () => {
     renderApp('/');
 
     const user = userEvent.setup();
-    await user.click(await screen.findByRole('button', { name: 'Logout' }));
+    await user.click(await screen.findByRole('button', { name: 'Log out' }));
 
     await waitFor(() => expect(screen.getByRole('button', { name: 'Sign In' })).toBeInTheDocument());
   });

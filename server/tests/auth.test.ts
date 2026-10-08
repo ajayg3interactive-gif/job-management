@@ -251,6 +251,12 @@ describe('route protection', () => {
   // unauthenticated requests. Add each new module's routes here as they are built.
   const protectedRoutes: Array<[method: 'get' | 'post' | 'put' | 'patch', path: string]> = [
     ['get', '/api/auth/me'],
+    ['get', '/api/employees'],
+    ['get', '/api/employees?active=true'],
+    ['post', '/api/employees'],
+    ['get', '/api/employees/1'],
+    ['put', '/api/employees/1'],
+    ['patch', '/api/employees/1/status'],
   ];
 
   it.each(protectedRoutes)('%s %s returns 401 without a cookie', async (method, path) => {

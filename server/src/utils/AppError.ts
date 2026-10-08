@@ -33,6 +33,12 @@ export class AppError extends Error {
     return new AppError(HTTP_STATUS.NOT_FOUND, ERROR_CODES.NOT_FOUND, message);
   }
 
+  static duplicateEmail(message = 'An employee with this email already exists') {
+    return new AppError(HTTP_STATUS.CONFLICT, ERROR_CODES.DUPLICATE_EMAIL, message, [
+      { field: 'email', message },
+    ]);
+  }
+
   static invalidCredentials() {
     return new AppError(
       HTTP_STATUS.UNAUTHORIZED,

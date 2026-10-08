@@ -109,10 +109,16 @@ Start with `docs/business-rules/README.md` only if you need the list of decision
 - Dates: store/send ISO strings, display as `08 Oct 2026` and times as `09:10 AM`.
 - Tailwind only. No inline style objects unless unavoidable.
 - **Theme (use it for every component).** All colors, the font family and the font weights are CSS variables defined once in `client/src/index.css` and exposed to Tailwind through `@theme`.
-  - Colors: `bg-background`, `bg-surface`, `border-border`, `text-text`, `text-text-muted`, `bg-primary`, `text-on-primary`, `secondary`, `accent`, `danger` (errors). Dark mode is the `.dark` block in the same file.
+  - Colors: `bg-background`, `bg-surface`, `border-border`, `text-text`, `text-text-muted`, `bg-primary`, `text-on-primary`, `secondary`, `accent`, `danger` (errors), `overlay` (backdrop behind drawers and modals). Dark mode is the `.dark` block in the same file, switched by the sidebar toggle (saved in localStorage).
   - Font: family is `--font-family`, weights are `--fw-normal|medium|semibold|bold`. Use `font-normal`, `font-medium`, `font-semibold`, `font-bold`. The default font is Inter.
   - **Never hardcode** hex values, Tailwind palette colors (`gray-*`, `red-*`, `white`, ...), or a font family in a component. To change the look, edit only `index.css` (for a new font, also swap the font `@import` at its top).
   - If a needed color or weight has no token, add the token in `index.css` first, then use it.
+- **Responsive design (every page and component).** The app must work from phone width (about 390px) up to desktop.
+  - Build mobile-first with Tailwind breakpoints (`sm:`, `md:`, `lg:`): write the phone layout first, then add larger-screen changes.
+  - The layout shell already handles navigation: the sidebar is always visible from `md` (768px) up and becomes a slide-in drawer below it (hamburger button in a slim top bar). Pages render inside it and must not add their own navigation.
+  - No horizontal scrolling of the page. Wide tables go in an `overflow-x-auto` wrapper; forms, filters and toolbars stack on small screens (`flex-col sm:flex-row`); modals stay within the screen (`max-w-md w-full` with side padding).
+  - Touch targets are at least 44px (`min-h-11` / `min-w-11`) on small screens. Text stays readable without zooming (no smaller than 12px).
+  - Before calling a UI feature done, check it at about 390px and at desktop width (browser dev tools or Playwright), in both light and dark themes.
 
 ### Testing
 - Write backend tests alongside each feature, not at the end.
@@ -122,6 +128,6 @@ Start with `docs/business-rules/README.md` only if you need the list of decision
 ## Definition of done (per feature)
 1. Business rule file in `docs/business-rules/` is satisfied.
 2. Backend validation and permissions in place.
-3. Frontend UI with loading/error/empty states.
+3. Frontend UI with loading/error/empty states, using the theme tokens and responsive from phone to desktop.
 4. Tests written and passing.
 5. README/setup notes updated if setup changed.
