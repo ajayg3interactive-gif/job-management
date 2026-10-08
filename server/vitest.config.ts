@@ -4,7 +4,10 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts', 'tests/**/*.test.ts'],
-    // Tests must run against the separate test database (DATABASE_URL in .env.test)
+    // Points DATABASE_URL at TEST_DATABASE_URL and refuses to run against the dev database.
+    setupFiles: ['./tests/setup.ts'],
     env: { NODE_ENV: 'test' },
+    // Test files share one database, so they must not run in parallel.
+    fileParallelism: false,
   },
 });

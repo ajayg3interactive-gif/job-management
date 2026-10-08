@@ -1,6 +1,6 @@
 # 10 Testing Checklist
 
-Write backend tests alongside each feature. Use a **separate test database** (`DATABASE_URL_TEST`), reset between test files. Never run tests against the dev database.
+Write backend tests alongside each feature. Use a **separate test database** (`TEST_DATABASE_URL`), reset between test files. Never run tests against the dev database.
 
 ## Backend (Vitest + Supertest)
 

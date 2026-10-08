@@ -7,4 +7,101 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Models are defined per docs/business-rules/08-database-schema.md
+// Models follow docs/business-rules/08-database-schema.md
+
+enum JobStatus {
+  PENDING
+  IN_PRODUCTION
+  READY_FOR_DISPATCH
+  COMPLETED
+  CANCELLED
+}
+
+enum JobPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String   @db.VarChar(100)
+  email        String   @unique @db.VarChar(191)
+  passwordHash String   @map("password_hash") @db.VarChar(255)
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  createdJobs   Job[]
+  statusChanges JobStatusHistory[]
+
+  @@map("users")
+}
+
+model Employee {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(100)
+  email     String   @unique @db.VarChar(191)
+  phone     String?  @db.VarChar(20)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  jobs Job[]
+
+  @@index([isActive])
+  @@map("employees")
+}
+
+model Job {
+  id                 Int         @id @default(autoincrement())
+  jobNo              String      @unique @map("job_no") @db.VarChar(20)
+  customerName       String      @map("customer_name") @db.VarChar(150)
+  product            String      @db.VarChar(150)
+  quantity           Int
+  priority           JobPriority
+  status             JobStatus   @default(PENDING)
+  assignedEmployeeId Int?        @map("assigned_employee_id")
+  startDate          DateTime?   @map("start_date") @db.Date
+  dueDate            DateTime    @map("due_date") @db.Date
+  notes              String?     @db.Text
+  createdById        Int         @map("created_by")
+  createdAt          DateTime    @default(now()) @map("created_at")
+  updatedAt          DateTime    @updatedAt @map("updated_at")
+
+  assignedEmployee Employee?          @relation(fields: [assignedEmployeeId], references: [id], onDelete: SetNull)
+  createdBy        User               @relation(fields: [createdById], references: [id])
+  history          JobStatusHistory[]
+
+  @@index([status])
+  @@index([priority])
+  @@index([assignedEmployeeId])
+  @@index([dueDate])
+  @@index([createdAt])
+  @@index([customerName])
+  @@map("jobs")
+}
+
+model JobStatusHistory {
+  id          Int        @id @default(autoincrement())
+  jobId       Int        @map("job_id")
+  oldStatus   JobStatus? @map("old_status")
+  newStatus   JobStatus  @map("new_status")
+  changedById Int        @map("changed_by")
+  createdAt   DateTime   @default(now()) @map("created_at")
+
+  job       Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  changedBy User @relation(fields: [changedById], references: [id])
+
+  @@index([jobId, createdAt])
+  @@map("job_status_history")
+}
+
+// Single row (id = 1). Incremented inside the create-job transaction to build job_no.
+model JobCounter {
+  id         Int @id
+  lastNumber Int @default(0) @map("last_number")
+
+  @@map("job_counters")
+}
