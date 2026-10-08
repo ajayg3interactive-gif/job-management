@@ -59,6 +59,17 @@ npm run dev
 npm test
 ```
 
+## Implementation plan (local file, not in git)
+
+The phase-by-phase plan lives in `IMPLEMENTATION_PLAN.local.md` at the repo root. It is git-ignored (`*.local.md`), so never commit it or move it into a tracked folder.
+
+When the user asks to implement a phase or "the next phase":
+1. Open `IMPLEMENTATION_PLAN.local.md` and read that phase's section (and the progress checklist at the top).
+2. Open only the business-rule docs that phase names (see the table below).
+3. Implement the steps in order: backend, then frontend, then tests. Do not skip a step or pull in work from a later phase.
+4. Before starting, check the working tree for work already done for that phase and say what is partly done instead of redoing it.
+5. When the phase is finished and tests pass, tick it in the progress checklist of the plan file.
+
 ## Business rules (read only when needed)
 
 Do not read these files up front. Open only the file(s) relevant to the task you are working on.
