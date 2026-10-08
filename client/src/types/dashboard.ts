@@ -1,6 +1,5 @@
-import type { JobPriorityValue, JobStatusValue } from '../../config/constants.js';
+import type { JobPriority, JobStatus } from './job';
 
-// GET /dashboard takes no input, so this file only describes the response.
 export interface DashboardCounts {
   total: number;
   pending: number;
@@ -14,16 +13,17 @@ export interface DashboardRecentJob {
   id: number;
   jobNo: string;
   customerName: string;
-  status: JobStatusValue;
+  status: JobStatus;
+  // Date-only value, YYYY-MM-DD.
   dueDate: string;
 }
 
 export interface DashboardDueSoonJob extends DashboardRecentJob {
-  priority: JobPriorityValue;
+  priority: JobPriority;
   isOverdue: boolean;
 }
 
-export interface DashboardResponse {
+export interface Dashboard {
   counts: DashboardCounts;
   recentJobs: DashboardRecentJob[];
   dueSoon: DashboardDueSoonJob[];

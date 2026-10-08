@@ -9,6 +9,7 @@ import type { Employee, EmployeeStatusFilter } from '../../types/employee';
 import DeactivateEmployeeModal from './DeactivateEmployeeModal';
 import EmployeeFormModal from './EmployeeFormModal';
 import { EMPLOYEES_PAGE_SIZE, useEmployeeListParams } from './useEmployeeListParams';
+import { Select } from '../../components/Select';
 
 type FormTarget = { mode: 'create' } | { mode: 'edit'; employee: Employee };
 
@@ -49,6 +50,12 @@ export default function EmployeesPage() {
   const [formTarget, setFormTarget] = useState<FormTarget | null>(null);
   const [deactivating, setDeactivating] = useState<Employee | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+
+  const statusOptions = [
+  { value: '', label: 'All statuses' },
+  { value: 'active', label: 'Active' },
+  { value: 'inactive', label: 'Inactive' },
+];
 
   const hasFilters = search !== '' || status !== undefined;
   const pendingId = isChangingStatus ? originalArgs?.id : undefined;
@@ -234,7 +241,7 @@ export default function EmployeesPage() {
               className={fieldClass(false)}
             />
           </div>
-          <select
+          {/* <select
             value={status ?? ''}
             onChange={(event) => update({ status: event.target.value as EmployeeStatusFilter | '' })}
             aria-label="Filter by status"
@@ -243,7 +250,14 @@ export default function EmployeesPage() {
             <option value="">All statuses</option>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
-          </select>
+          </select> */}
+        <Select
+          options={statusOptions}
+          value={status ?? ''}
+          onChange={(v) => update({ status: v as EmployeeStatusFilter | '' })}
+          ariaLabel="Filter by status"
+          className="sm:w-44"
+        />
         </div>
 
         {actionError && <FormAlert message={actionError} />}

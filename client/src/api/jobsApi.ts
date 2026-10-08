@@ -19,7 +19,7 @@ export const jobsApi = baseApi.injectEndpoints({
 
     createJob: build.mutation<Job, JobPayload>({
       query: (body) => ({ url: '/jobs', method: 'POST', body }),
-      invalidatesTags: [{ type: 'Job', id: 'LIST' }],
+      invalidatesTags: [{ type: 'Job', id: 'LIST' }, { type: 'Dashboard' }],
     }),
 
     updateJob: build.mutation<Job, { id: number } & JobPayload>({
@@ -27,6 +27,7 @@ export const jobsApi = baseApi.injectEndpoints({
       invalidatesTags: (_result, _error, { id }) => [
         { type: 'Job', id },
         { type: 'Job', id: 'LIST' },
+        { type: 'Dashboard' },
       ],
     }),
 
