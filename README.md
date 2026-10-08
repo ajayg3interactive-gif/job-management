@@ -32,3 +32,4 @@ The client calls the API at `${VITE_API_URL}/api`, so `VITE_API_URL` is just the
 Login is rate limited to 10 attempts per 15 minutes per IP (switched off under `NODE_ENV=test`).
 
 Demo admin (from the seed, change in real use): `admin@example.com` / `Admin@123`.
+The seed also adds 5 employees (one inactive) and 12 sample jobs covering every status and priority. Running it again never duplicates them or moves the job counter back.

@@ -29,6 +29,8 @@
   --color-accent: var(--accent);
   --color-on-primary: var(--on-primary);
   --color-danger: var(--danger);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
   --color-overlay: var(--overlay);
 }
 
@@ -47,6 +49,8 @@
   --secondary: #83b7d8;
   --accent: #2c75a5;
   --danger: #dc2626;
+  --success: #15803d;
+  --warning: #b45309;
   --surface: color-mix(in srgb, var(--background), var(--text) 3%);
   --border: color-mix(in srgb, var(--background), var(--text) 10%);
   --text-muted: color-mix(in srgb, var(--text), var(--background) 45%);
@@ -61,6 +65,8 @@
   --secondary: #275c7c;
   --accent: #5aa3d3;
   --danger: #f87171;
+  --success: #4ade80;
+  --warning: #fbbf24;
   --surface: color-mix(in srgb, var(--background), var(--text) 6%);
   --border: color-mix(in srgb, var(--background), var(--text) 14%);
   --text-muted: color-mix(in srgb, var(--text), var(--background) 40%);

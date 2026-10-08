@@ -16,6 +16,11 @@ export interface EmployeeOption {
   name: string;
 }
 
+// Returned by GET /employees?all=true for the job list filter (includes inactive employees).
+export interface EmployeeFilterOption extends EmployeeOption {
+  isActive: boolean;
+}
+
 export interface EmployeeListParams {
   search?: string;
   status?: EmployeeStatusFilter;

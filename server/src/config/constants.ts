@@ -11,6 +11,20 @@ export const JOB_STATUS = {
 export type JobStatusValue = (typeof JOB_STATUS)[keyof typeof JOB_STATUS];
 export const JOB_STATUS_VALUES = Object.values(JOB_STATUS) as [JobStatusValue, ...JobStatusValue[]];
 
+export const JOB_STATUS_LABELS: Record<JobStatusValue, string> = {
+  PENDING: 'Pending',
+  IN_PRODUCTION: 'In Production',
+  READY_FOR_DISPATCH: 'Ready for Dispatch',
+  COMPLETED: 'Completed',
+  CANCELLED: 'Cancelled',
+};
+
+// Jobs in these statuses are locked: no edits and no status changes.
+export const LOCKED_STATUSES: readonly JobStatusValue[] = [
+  JOB_STATUS.COMPLETED,
+  JOB_STATUS.CANCELLED,
+];
+
 export const JOB_PRIORITY = {
   LOW: 'LOW',
   NORMAL: 'NORMAL',

@@ -28,16 +28,18 @@
 ## Edit
 - Admin can edit all fields above except Job No and Status.
 - Status changes only happen through the status workflow endpoint, never through edit.
+- The Assigned Employee dropdown lists active employees plus the job's current assignee, who stays selected and is marked "inactive" if they were deactivated since. Create and edit are separate pages (`/jobs/new`, `/jobs/:id/edit`).
 - **Completed and Cancelled jobs are locked.** Editing them returns `422`, enforced on the backend. The UI hides or disables the Edit button.
 
 ## List page
 Columns: Job No, Customer, Assigned To, Priority, Status. Row click opens the details page.
 
 - **Search:** by job number or customer name (partial, case-insensitive match).
-- **Filters:** Status, Priority, Assigned Employee. Filters combine with search using AND.
+- **Filters:** Status, Priority, Assigned Employee. Filters combine with search using AND. The Assigned Employee filter lists **all** employees, including inactive ones (marked "inactive"), because inactive employees can still have jobs (`GET /employees?all=true`).
 - **Pagination:** server side, default 10 per page. Default sort: newest first.
 - Empty state when nothing matches. Loading and error states required.
 - Search and filters reflect in the URL query string so the page is shareable and survives refresh.
+- On small screens (below 768px) each job is shown as a card instead of a table row.
 
 ## Details page
 Shows: Job No, Customer, Product, Quantity, Priority, Assigned To, Status, Start Date, Due Date, Notes, plus the Status History timeline.

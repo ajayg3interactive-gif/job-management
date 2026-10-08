@@ -42,15 +42,10 @@ export const employeeStatusBodySchema = z.object({
   isActive: z.boolean({ error: 'isActive must be true or false' }),
 });
 
-export const employeeIdParamsSchema = z.object({
-  id: z.coerce
-    .number({ error: 'Id must be a positive integer' })
-    .int('Id must be a positive integer')
-    .positive('Id must be a positive integer'),
-});
-
 export const employeeListQuerySchema = z.object({
-  // Dropdown mode: only `true` is accepted.
+  // Dropdown modes (no paging): only `true` is accepted for each.
+  // active=true -> active employees only. all=true -> every employee, for filters.
+  all: z.literal('true', { error: 'all can only be "true"' }).optional(),
   active: z.literal('true', { error: 'active can only be "true"' }).optional(),
   search: z.string().trim().max(100, 'Search must be at most 100 characters').optional(),
   status: z.enum(['active', 'inactive'], { error: 'Status must be active or inactive' }).optional(),
@@ -61,6 +56,9 @@ export const employeeListQuerySchema = z.object({
     .min(1, 'Page size must be between 1 and 100')
     .max(100, 'Page size must be between 1 and 100')
     .default(10),
+}).refine((query) => !(query.active && query.all), {
+  error: 'active and all cannot be combined',
+  path: ['all'],
 });
 
 export type EmployeeBody = z.infer<typeof employeeBodySchema>;

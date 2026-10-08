@@ -33,7 +33,8 @@ const baseQueryWith401: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryE
 export const baseApi = createApi({
   reducerPath: 'api',
   baseQuery: baseQueryWith401,
-  // Employee: list pages. EmployeeOptions: the active-only dropdown used by the job form.
-  tagTypes: ['Employee', 'EmployeeOptions'],
+  // Employee: list pages. EmployeeOptions: the employee dropdowns (job form and job filter).
+  // Job: job lists and details.
+  tagTypes: ['Employee', 'EmployeeOptions', 'Job'],
   endpoints: () => ({}),
 });

@@ -30,7 +30,8 @@ Base path: `/api`. JSON in and out. All routes except `POST /api/auth/login` req
 | Method | Path | Notes |
 |---|---|---|
 | GET | `/employees` | query: `search`, `status` (`active`/`inactive`), `page`, `pageSize` |
-| GET | `/employees?active=true` | dropdown use, returns active only, no pagination, `{ id, name }` fields |
+| GET | `/employees?active=true` | dropdown use, returns active only, no pagination, plain array of `{ id, name }` |
+| GET | `/employees?all=true` | job list filter use, returns every employee including inactive, no pagination, plain array of `{ id, name, isActive }`. Cannot be combined with `active` |
 | POST | `/employees` | `{ name, email, phone? }`, 201 |
 | GET | `/employees/:id` | |
 | PUT | `/employees/:id` | `{ name, email, phone? }` |
@@ -42,9 +43,31 @@ Base path: `/api`. JSON in and out. All routes except `POST /api/auth/login` req
 | GET | `/jobs` | query: `search`, `status`, `priority`, `employeeId`, `page`, `pageSize`. Returns `{ data, page, pageSize, total }` |
 | POST | `/jobs` | create body below, returns 201 with job |
 | GET | `/jobs/:id` | job with assigned employee object |
-| PUT | `/jobs/:id` | same body as create, 422 if locked |
+| PUT | `/jobs/:id` | same body as create, 422 `JOB_LOCKED` if Completed or Cancelled. Saving without changing the assignee works even if they are now inactive; a newly chosen inactive or missing employee is 400 on `assignedEmployeeId` |
 | POST | `/jobs/:id/status` | `{ status }`, 409 invalid transition, 422 locked |
 | GET | `/jobs/:id/history` | `[ { id, oldStatus, newStatus, changedBy: { id, name }, createdAt } ]` oldest first |
+
+Job response shape (create, get, edit and each item of the list):
+
+```json
+{
+  "id": 1,
+  "jobNo": "JOB-001",
+  "customerName": "ABC Timber",
+  "product": "Standard Pallet",
+  "quantity": 120,
+  "priority": "HIGH",
+  "status": "PENDING",
+  "assignedEmployee": { "id": 3, "name": "Ann Lee", "isActive": true },
+  "startDate": "2026-10-08",
+  "dueDate": "2026-10-12",
+  "notes": "Customer requested urgent delivery.",
+  "createdAt": "2026-10-08T06:00:00.000Z",
+  "updatedAt": "2026-10-08T06:00:00.000Z"
+}
+```
+
+`assignedEmployee` is `null` when unassigned. `isActive` lets the UI mark an assignee who was deactivated later.
 
 Create and edit body:
 

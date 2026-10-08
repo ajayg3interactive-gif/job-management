@@ -471,3 +471,40 @@ describe('GET /api/employees?active=true (dropdown)', () => {
     expect(fieldsOf(res)).toContain('active');
   });
 });
+
+describe('GET /api/employees?all=true (filter options)', () => {
+  it('returns every employee, active and inactive, as { id, name, isActive }, without pagination', async () => {
+    const active = await createEmployee({ name: 'Zed Active', email: 'zed@example.com' });
+    const inactive = await createEmployee({ name: 'Ian Inactive', email: 'ian@example.com' });
+    await agent.patch(`/api/employees/${inactive.id}/status`).send({ isActive: false });
+
+    const res = await agent.get('/api/employees?all=true');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual([
+      { id: inactive.id, name: 'Ian Inactive', isActive: false },
+      { id: active.id, name: 'Zed Active', isActive: true },
+    ]);
+  });
+
+  it('is not paginated and ignores search, status and paging params', async () => {
+    for (let i = 0; i < 12; i++) {
+      await createEmployee({ name: `Person ${String(i).padStart(2, '0')}`, email: `p${i}@example.com` });
+    }
+    const res = await agent.get('/api/employees?all=true&search=zzz&status=inactive&page=5&pageSize=1');
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(12);
+  });
+
+  it.each(['false', '1', ''])('rejects all=%s with 400', async (value) => {
+    const res = await agent.get(`/api/employees?all=${value}`);
+    expect(res.status).toBe(400);
+    expect(fieldsOf(res)).toContain('all');
+  });
+
+  it('rejects combining all and active', async () => {
+    const res = await agent.get('/api/employees?all=true&active=true');
+    expect(res.status).toBe(400);
+    expect(fieldsOf(res)).toContain('all');
+  });
+});

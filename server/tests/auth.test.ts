@@ -257,6 +257,11 @@ describe('route protection', () => {
     ['get', '/api/employees/1'],
     ['put', '/api/employees/1'],
     ['patch', '/api/employees/1/status'],
+    ['get', '/api/employees?all=true'],
+    ['get', '/api/jobs'],
+    ['post', '/api/jobs'],
+    ['get', '/api/jobs/1'],
+    ['put', '/api/jobs/1'],
   ];
 
   it.each(protectedRoutes)('%s %s returns 401 without a cookie', async (method, path) => {

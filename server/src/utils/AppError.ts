@@ -33,6 +33,14 @@ export class AppError extends Error {
     return new AppError(HTTP_STATUS.NOT_FOUND, ERROR_CODES.NOT_FOUND, message);
   }
 
+  static jobLocked(statusLabel: string) {
+    return new AppError(
+      HTTP_STATUS.UNPROCESSABLE,
+      ERROR_CODES.JOB_LOCKED,
+      `This job is ${statusLabel} and can no longer be changed`,
+    );
+  }
+
   static duplicateEmail(message = 'An employee with this email already exists') {
     return new AppError(HTTP_STATUS.CONFLICT, ERROR_CODES.DUPLICATE_EMAIL, message, [
       { field: 'email', message },

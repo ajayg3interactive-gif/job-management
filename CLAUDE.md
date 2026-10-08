@@ -109,7 +109,7 @@ Start with `docs/business-rules/README.md` only if you need the list of decision
 - Dates: store/send ISO strings, display as `08 Oct 2026` and times as `09:10 AM`.
 - Tailwind only. No inline style objects unless unavoidable.
 - **Theme (use it for every component).** All colors, the font family and the font weights are CSS variables defined once in `client/src/index.css` and exposed to Tailwind through `@theme`.
-  - Colors: `bg-background`, `bg-surface`, `border-border`, `text-text`, `text-text-muted`, `bg-primary`, `text-on-primary`, `secondary`, `accent`, `danger` (errors), `overlay` (backdrop behind drawers and modals). Dark mode is the `.dark` block in the same file, switched by the sidebar toggle (saved in localStorage).
+  - Colors: `bg-background`, `bg-surface`, `border-border`, `text-text`, `text-text-muted`, `bg-primary`, `text-on-primary`, `secondary`, `accent`, `danger` (errors), `success` and `warning` (status/priority badges), `overlay` (backdrop behind drawers and modals). Dark mode is the `.dark` block in the same file, switched by the sidebar toggle (saved in localStorage).
   - Font: family is `--font-family`, weights are `--fw-normal|medium|semibold|bold`. Use `font-normal`, `font-medium`, `font-semibold`, `font-bold`. The default font is Inter.
   - **Never hardcode** hex values, Tailwind palette colors (`gray-*`, `red-*`, `white`, ...), or a font family in a component. To change the look, edit only `index.css` (for a new font, also swap the font `@import` at its top).
   - If a needed color or weight has no token, add the token in `index.css` first, then use it.

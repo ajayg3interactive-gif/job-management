@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { useGetEmployeesQuery, useSetEmployeeStatusMutation } from '../../api/employeesApi';
 import { parseApiError } from '../../api/errors';
 import { FormAlert, fieldClass } from '../../components/FormField';
 import Icon from '../../components/Icon';
 import Pagination from '../../components/Pagination';
-import { useDebouncedValue } from '../../hooks/useDebouncedValue';
+import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
 import type { Employee, EmployeeStatusFilter } from '../../types/employee';
 import DeactivateEmployeeModal from './DeactivateEmployeeModal';
 import EmployeeFormModal from './EmployeeFormModal';
@@ -31,22 +31,11 @@ export default function EmployeesPage() {
   const { search, status, page, update } = useEmployeeListParams();
 
   // The box updates instantly; the URL (and so the request) follows once typing pauses.
-  const [searchInput, setSearchInput] = useState(search);
-  const debouncedSearch = useDebouncedValue(searchInput);
-  const lastSearchSent = useRef(search);
-  // `update` changes identity on every URL change. Reading it through a ref keeps the effect
-  // below tied to the debounced text only, so a stale value can never overwrite the URL.
-  const updateRef = useRef(update);
-  useEffect(() => {
-    updateRef.current = update;
-  });
-  useEffect(() => {
-    const next = debouncedSearch.trim();
-    if (next !== lastSearchSent.current) {
-      lastSearchSent.current = next;
-      updateRef.current({ search: next });
-    }
-  }, [debouncedSearch]);
+  const {
+    input: searchInput,
+    setInput: setSearchInput,
+    reset: resetSearchInput,
+  } = useDebouncedSearch(search, (value) => update({ search: value }));
 
   const { data, isLoading, isFetching, isError, refetch } = useGetEmployeesQuery({
     search,
@@ -77,8 +66,7 @@ export default function EmployeesPage() {
   };
 
   const clearFilters = () => {
-    lastSearchSent.current = '';
-    setSearchInput('');
+    resetSearchInput();
     update({ search: '', status: '' });
   };
 

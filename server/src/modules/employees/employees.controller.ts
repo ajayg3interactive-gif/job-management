@@ -12,9 +12,11 @@ const idOf = (req: Request) => (req.params as unknown as { id: number }).id;
 
 export async function list(req: Request, res: Response) {
   const query = req.query as unknown as EmployeeListQuery;
-  const result = query.active
-    ? await employeesService.listActiveOptions()
-    : await employeesService.list(query);
+  const result = query.all
+    ? await employeesService.listAllOptions()
+    : query.active
+      ? await employeesService.listActiveOptions()
+      : await employeesService.list(query);
   res.status(HTTP_STATUS.OK).json(result);
 }
 

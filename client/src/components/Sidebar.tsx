@@ -17,12 +17,13 @@ interface NavSection {
   items: NavItem[];
 }
 
-// Items are added here as each page is built (Jobs comes with the jobs feature).
+// Items are added here as each page is built.
 const NAV_SECTIONS: NavSection[] = [
   {
     title: 'Overview',
     items: [
       { label: 'Dashboard', to: '/', icon: 'home', end: true },
+      { label: 'Jobs', to: '/jobs', icon: 'jobs' },
       { label: 'Employees', to: '/employees', icon: 'user' },
     ],
   },

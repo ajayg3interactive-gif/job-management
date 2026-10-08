@@ -1,14 +1,19 @@
 import type {
   Employee,
   EmployeeInput,
+  EmployeeFilterOption,
   EmployeeListParams,
   EmployeeOption,
   PaginatedResponse,
 } from '../types/employee';
 import { baseApi } from './baseApi';
 
-// Any employee change can affect the filtered list and the active-only dropdown.
-const employeeTags = [{ type: 'Employee' as const, id: 'LIST' }, 'EmployeeOptions' as const];
+// Any employee change can affect the filtered list, the dropdowns and the employee shown on jobs.
+const employeeTags = [
+  { type: 'Employee' as const, id: 'LIST' },
+  'EmployeeOptions' as const,
+  'Job' as const,
+];
 
 export const employeesApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
@@ -23,6 +28,12 @@ export const employeesApi = baseApi.injectEndpoints({
     // Active employees only, no paging. Used by the job assignment dropdown.
     getEmployeeOptions: build.query<EmployeeOption[], void>({
       query: () => ({ url: '/employees', params: { active: 'true' } }),
+      providesTags: ['EmployeeOptions'],
+    }),
+
+    // Every employee, active or not, for the job list's Assigned Employee filter.
+    getAllEmployeeOptions: build.query<EmployeeFilterOption[], void>({
+      query: () => ({ url: '/employees', params: { all: 'true' } }),
       providesTags: ['EmployeeOptions'],
     }),
 
@@ -50,6 +61,7 @@ export const employeesApi = baseApi.injectEndpoints({
 export const {
   useGetEmployeesQuery,
   useGetEmployeeOptionsQuery,
+  useGetAllEmployeeOptionsQuery,
   useCreateEmployeeMutation,
   useUpdateEmployeeMutation,
   useSetEmployeeStatusMutation,

@@ -7,6 +7,7 @@ import { JSON_BODY_LIMIT } from './config/constants.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 import { authRouter } from './modules/auth/auth.routes.js';
 import { employeesRouter } from './modules/employees/employees.routes.js';
+import { jobsRouter } from './modules/jobs/jobs.routes.js';
 
 export const app = express();
 
@@ -24,6 +25,7 @@ api.get('/health', (_req, res) => {
 // Module routers are mounted here as each feature is built.
 api.use('/auth', authRouter);
 api.use('/employees', employeesRouter);
+api.use('/jobs', jobsRouter);
 
 app.use('/api', api);
 

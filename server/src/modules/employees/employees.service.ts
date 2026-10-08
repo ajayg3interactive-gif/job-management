@@ -55,6 +55,14 @@ export function listActiveOptions() {
   });
 }
 
+// For filters: every employee (including inactive, who can still have jobs), no pagination.
+export function listAllOptions() {
+  return prisma.employee.findMany({
+    select: { id: true, name: true, isActive: true },
+    orderBy: [{ name: 'asc' }, { id: 'asc' }],
+  });
+}
+
 export async function getById(id: number) {
   const employee = await prisma.employee.findUnique({ where: { id }, select: employeeSelect });
   if (!employee) throw AppError.notFound('Employee not found');

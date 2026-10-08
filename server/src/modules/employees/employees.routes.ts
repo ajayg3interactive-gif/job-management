@@ -2,10 +2,10 @@ import { Router } from 'express';
 import { requireAuth } from '../../middleware/requireAuth.js';
 import { validate } from '../../middleware/validate.js';
 import { asyncHandler } from '../../utils/asyncHandler.js';
+import { idParamsSchema } from '../../utils/idParams.js';
 import * as employeesController from './employees.controller.js';
 import {
   employeeBodySchema,
-  employeeIdParamsSchema,
   employeeListQuerySchema,
   employeeStatusBodySchema,
 } from './employees.schema.js';
@@ -28,18 +28,18 @@ employeesRouter.post(
 
 employeesRouter.get(
   '/:id',
-  validate({ params: employeeIdParamsSchema }),
+  validate({ params: idParamsSchema }),
   asyncHandler(employeesController.getById),
 );
 
 employeesRouter.put(
   '/:id',
-  validate({ params: employeeIdParamsSchema, body: employeeBodySchema }),
+  validate({ params: idParamsSchema, body: employeeBodySchema }),
   asyncHandler(employeesController.update),
 );
 
 employeesRouter.patch(
   '/:id/status',
-  validate({ params: employeeIdParamsSchema, body: employeeStatusBodySchema }),
+  validate({ params: idParamsSchema, body: employeeStatusBodySchema }),
   asyncHandler(employeesController.setStatus),
 );
