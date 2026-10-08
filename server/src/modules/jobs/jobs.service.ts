@@ -10,6 +10,7 @@ import { formatDateOnly, parseDateOnly } from '../../utils/dates.js';
 import { escapeLike } from '../../utils/escapeLike.js';
 import { prisma } from '../../utils/prisma.js';
 import type { JobBody, JobListQuery } from './jobs.schema.js';
+import { canTransition } from './transitions.js';
 
 const jobInclude = {
   assignedEmployee: { select: { id: true, name: true, isActive: true } },
@@ -145,6 +146,56 @@ export async function getById(id: number) {
   const job = await prisma.job.findUnique({ where: { id }, include: jobInclude });
   if (!job) throw AppError.notFound('Job not found');
   return toJobDto(job);
+}
+
+export async function changeStatus(id: number, newStatus: JobStatusValue, userId: number) {
+  const job = await prisma.$transaction(async (tx) => {
+    // Locking read: concurrent changes to the same job queue up here, and each one
+    // sees the status the previous one committed (a plain read would use a stale snapshot).
+    const rows = await tx.$queryRaw<{ status: JobStatusValue }[]>`
+      SELECT status FROM jobs WHERE id = ${id} FOR UPDATE`;
+    const current = rows[0]?.status;
+    if (!current) throw AppError.notFound('Job not found');
+
+    if (isLocked(current)) throw AppError.jobLocked(JOB_STATUS_LABELS[current]);
+    if (!canTransition(current, newStatus)) {
+      throw AppError.invalidTransition(JOB_STATUS_LABELS[current], JOB_STATUS_LABELS[newStatus]);
+    }
+
+    const updated = await tx.job.update({
+      where: { id },
+      data: { status: newStatus },
+      include: jobInclude,
+    });
+
+    // Same transaction as the status change: if this fails, the status rolls back.
+    await tx.jobStatusHistory.create({
+      data: { jobId: id, oldStatus: current, newStatus, changedById: userId },
+    });
+
+    return updated;
+  });
+
+  return toJobDto(job);
+}
+
+export async function getHistory(id: number) {
+  const exists = await prisma.job.findUnique({ where: { id }, select: { id: true } });
+  if (!exists) throw AppError.notFound('Job not found');
+
+  const rows = await prisma.jobStatusHistory.findMany({
+    where: { jobId: id },
+    orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+    select: {
+      id: true,
+      oldStatus: true,
+      newStatus: true,
+      createdAt: true,
+      changedBy: { select: { id: true, name: true } },
+    },
+  });
+
+  return rows;
 }
 
 export async function update(id: number, input: JobBody) {

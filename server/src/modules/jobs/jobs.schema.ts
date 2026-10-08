@@ -87,5 +87,15 @@ export const jobListQuerySchema = z.object({
     .default(10),
 });
 
+export const jobStatusBodySchema = z.object({
+  status: z.enum(JOB_STATUS_VALUES, {
+    error: (issue) =>
+      issue.input === undefined
+        ? 'Status is required'
+        : `Status must be one of ${JOB_STATUS_VALUES.join(', ')}`,
+  }),
+});
+
+export type JobStatusBody = z.infer<typeof jobStatusBodySchema>;
 export type JobBody = z.infer<typeof jobBodySchema>;
 export type JobListQuery = z.infer<typeof jobListQuerySchema>;

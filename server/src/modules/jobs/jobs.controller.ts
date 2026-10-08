@@ -2,7 +2,7 @@ import type { Request, Response } from 'express';
 import { HTTP_STATUS } from '../../config/constants.js';
 import { AppError } from '../../utils/AppError.js';
 import type { IdParams } from '../../utils/idParams.js';
-import type { JobBody, JobListQuery } from './jobs.schema.js';
+import type { JobBody, JobListQuery, JobStatusBody } from './jobs.schema.js';
 import * as jobsService from './jobs.service.js';
 
 // req.query, req.params and req.body were validated and coerced by the validate middleware.
@@ -22,6 +22,16 @@ export async function create(req: Request, res: Response) {
   if (!req.user) throw AppError.unauthenticated();
   const job = await jobsService.create(req.body as JobBody, req.user.id);
   res.status(HTTP_STATUS.CREATED).json(job);
+}
+
+export async function changeStatus(req: Request, res: Response) {
+  if (!req.user) throw AppError.unauthenticated();
+  const { status } = req.body as JobStatusBody;
+  res.status(HTTP_STATUS.OK).json(await jobsService.changeStatus(idOf(req), status, req.user.id));
+}
+
+export async function getHistory(req: Request, res: Response) {
+  res.status(HTTP_STATUS.OK).json(await jobsService.getHistory(idOf(req)));
 }
 
 export async function update(req: Request, res: Response) {

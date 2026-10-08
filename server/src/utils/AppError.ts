@@ -41,6 +41,14 @@ export class AppError extends Error {
     );
   }
 
+  static invalidTransition(fromLabel: string, toLabel: string) {
+    return new AppError(
+      HTTP_STATUS.CONFLICT,
+      ERROR_CODES.INVALID_TRANSITION,
+      `Cannot change status from ${fromLabel} to ${toLabel}`,
+    );
+  }
+
   static duplicateEmail(message = 'An employee with this email already exists') {
     return new AppError(HTTP_STATUS.CONFLICT, ERROR_CODES.DUPLICATE_EMAIL, message, [
       { field: 'email', message },

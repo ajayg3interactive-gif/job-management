@@ -60,3 +60,12 @@ export interface JobPayload {
   dueDate: string;
   notes: string | null;
 }
+
+export interface JobHistoryEntry {
+  id: number;
+  // null for the creation row.
+  oldStatus: JobStatus | null;
+  newStatus: JobStatus;
+  changedBy: { id: number; name: string };
+  createdAt: string;
+}

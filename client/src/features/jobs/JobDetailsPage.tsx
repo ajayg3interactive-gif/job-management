@@ -1,11 +1,19 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useGetJobQuery } from '../../api/jobsApi';
 import { FormAlert } from '../../components/FormField';
 import Icon from '../../components/Icon';
 import { formatDate } from '../../utils/format';
+import CancelJobDialog from './CancelJobDialog';
+import ChangeStatusDialog from './ChangeStatusDialog';
 import { JobPriorityBadge, JobStatusBadge } from './JobBadges';
-import { isJobLocked } from './jobConstants';
+import JobHistoryTimeline from './JobHistoryTimeline';
+import { canCancelJob, getNextStatuses, isJobLocked } from './jobConstants';
+
+const actionButtonClass =
+  'inline-flex min-h-11 items-center justify-center rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-text transition-colors hover:bg-background';
+const cancelButtonClass =
+  'inline-flex min-h-11 items-center justify-center rounded-xl border border-danger/40 px-4 py-2.5 text-sm font-semibold text-danger transition-colors hover:bg-danger/10';
 
 const backLinkClass = 'inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline';
 
@@ -30,6 +38,7 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
 const dash = <span className="text-text-muted">—</span>;
 
 export default function JobDetailsPage() {
+  const [dialog, setDialog] = useState<'status' | 'cancel' | null>(null);
   const { id } = useParams();
   const jobId = Number(id);
   const validId = Number.isInteger(jobId) && jobId > 0;
@@ -72,6 +81,7 @@ export default function JobDetailsPage() {
   }
 
   const locked = isJobLocked(job.status);
+  const nextStatuses = getNextStatuses(job.status);
 
   return (
     <section>
@@ -85,13 +95,29 @@ export default function JobDetailsPage() {
           <JobStatusBadge status={job.status} />
         </div>
         {!locked && (
-          <Link
-            to={`/jobs/${job.id}/edit`}
-            className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-on-primary transition-opacity hover:opacity-90"
-          >
-            <Icon name="edit" size={16} />
-            Edit Job
-          </Link>
+          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+            {nextStatuses.length > 0 && (
+              <button type="button" onClick={() => setDialog('status')} className={actionButtonClass}>
+                Change Status
+              </button>
+            )}
+            {canCancelJob(job.status) && (
+              <button
+                type="button"
+                onClick={() => setDialog('cancel')}
+                className={cancelButtonClass}
+              >
+                Cancel Job
+              </button>
+            )}
+            <Link
+              to={`/jobs/${job.id}/edit`}
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-on-primary transition-opacity hover:opacity-90"
+            >
+              <Icon name="edit" size={16} />
+              Edit Job
+            </Link>
+          </div>
         )}
       </div>
 
@@ -126,6 +152,11 @@ export default function JobDetailsPage() {
           <dd className="mt-1 whitespace-pre-wrap break-words text-sm text-text">{job.notes ?? dash}</dd>
         </div>
       </div>
+
+      <JobHistoryTimeline jobId={job.id} />
+
+      {dialog === 'status' && !locked && <ChangeStatusDialog job={job} onClose={() => setDialog(null)} />}
+      {dialog === 'cancel' && !locked && <CancelJobDialog job={job} onClose={() => setDialog(null)} />}
     </section>
   );
 }

@@ -1,5 +1,5 @@
 import type { PaginatedResponse } from '../types/employee';
-import type { Job, JobListParams, JobPayload } from '../types/job';
+import type { Job, JobHistoryEntry, JobListParams, JobPayload, JobStatus } from '../types/job';
 import { baseApi } from './baseApi';
 
 export const jobsApi = baseApi.injectEndpoints({
@@ -29,7 +29,30 @@ export const jobsApi = baseApi.injectEndpoints({
         { type: 'Job', id: 'LIST' },
       ],
     }),
+
+    getJobHistory: build.query<JobHistoryEntry[], number>({
+      query: (id) => `/jobs/${id}/history`,
+      providesTags: (_result, _error, id) => [{ type: 'JobHistory', id }],
+    }),
+
+    // A status change touches the job, its history, the job lists and the dashboard counts.
+    changeJobStatus: build.mutation<Job, { id: number; status: JobStatus }>({
+      query: ({ id, status }) => ({ url: `/jobs/${id}/status`, method: 'POST', body: { status } }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: 'Job', id },
+        { type: 'Job', id: 'LIST' },
+        { type: 'JobHistory', id },
+        { type: 'Dashboard' },
+      ],
+    }),
   }),
 });
 
-export const { useGetJobsQuery, useGetJobQuery, useCreateJobMutation, useUpdateJobMutation } = jobsApi;
+export const {
+  useGetJobsQuery,
+  useGetJobQuery,
+  useCreateJobMutation,
+  useUpdateJobMutation,
+  useGetJobHistoryQuery,
+  useChangeJobStatusMutation,
+} = jobsApi;

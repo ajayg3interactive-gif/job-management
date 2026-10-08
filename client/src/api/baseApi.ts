@@ -34,7 +34,8 @@ export const baseApi = createApi({
   reducerPath: 'api',
   baseQuery: baseQueryWith401,
   // Employee: list pages. EmployeeOptions: the employee dropdowns (job form and job filter).
-  // Job: job lists and details.
-  tagTypes: ['Employee', 'EmployeeOptions', 'Job'],
+  // Job: job lists and details. JobHistory: a job's status history.
+  // Dashboard: the dashboard summary (provided in Phase 5, invalidated by status changes).
+  tagTypes: ['Employee', 'EmployeeOptions', 'Job', 'JobHistory', 'Dashboard'],
   endpoints: () => ({}),
 });

@@ -9,3 +9,12 @@ export function formatDate(dateOnly: string): string {
     timeZone: 'UTC',
   });
 }
+
+// Timestamps (ISO, UTC) are shown in the viewer's local timezone: "08 Oct 2026" and "09:10 AM".
+export function formatTimestampDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+export function formatTime(iso: string): string {
+  return new Date(iso).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+}

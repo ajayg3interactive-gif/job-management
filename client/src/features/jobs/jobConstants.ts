@@ -22,6 +22,22 @@ export const JOB_STATUS_LABELS: Record<JobStatus, string> = {
 const LOCKED_STATUSES: readonly JobStatus[] = [JOB_STATUS.COMPLETED, JOB_STATUS.CANCELLED];
 export const isJobLocked = (status: JobStatus) => LOCKED_STATUSES.includes(status);
 
+// Mirrors server/src/modules/jobs/transitions.ts. Used only to decide which actions to
+// offer; the backend still enforces every change.
+const NEXT_STATUSES: Record<JobStatus, readonly JobStatus[]> = {
+  PENDING: [JOB_STATUS.IN_PRODUCTION, JOB_STATUS.CANCELLED],
+  IN_PRODUCTION: [JOB_STATUS.READY_FOR_DISPATCH],
+  READY_FOR_DISPATCH: [JOB_STATUS.COMPLETED],
+  COMPLETED: [],
+  CANCELLED: [],
+};
+
+// Statuses the Change Status dialog offers. Cancelling is its own action.
+export const getNextStatuses = (status: JobStatus) =>
+  NEXT_STATUSES[status].filter((next) => next !== JOB_STATUS.CANCELLED);
+
+export const canCancelJob = (status: JobStatus) => NEXT_STATUSES[status].includes(JOB_STATUS.CANCELLED);
+
 export const JOB_PRIORITIES: readonly JobPriority[] = [
   JOB_PRIORITY.LOW,
   JOB_PRIORITY.NORMAL,
