@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import { env } from './config/env.js';
 import { JSON_BODY_LIMIT } from './config/constants.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
+import { authRouter } from './modules/auth/auth.routes.js';
 
 export const app = express();
 
@@ -20,6 +21,7 @@ api.get('/health', (_req, res) => {
 });
 
 // Module routers are mounted here as each feature is built.
+api.use('/auth', authRouter);
 
 app.use('/api', api);
 

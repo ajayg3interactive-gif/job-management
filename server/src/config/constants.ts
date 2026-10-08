@@ -53,5 +53,9 @@ export const HTTP_STATUS = {
   INTERNAL: 500,
 } as const;
 
+export const REMEMBER_ME_SECONDS = 30 * 24 * 60 * 60;
+export const LOGIN_RATE_LIMIT = { windowMs: 15 * 60 * 1000, limit: 10 } as const;
+export const INVALID_CREDENTIALS_MESSAGE = 'Invalid email or password';
+
 export const BCRYPT_COST = 10;
 export const JSON_BODY_LIMIT = '100kb';

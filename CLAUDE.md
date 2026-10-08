@@ -88,7 +88,7 @@ Start with `docs/business-rules/README.md` only if you need the list of decision
 
 ### Backend
 - **Backend validation is mandatory.** Validate every request body, query and params with Zod before the service runs, even if the frontend validates too.
-- Every route except `POST /auth/login` goes through `requireAuth`.
+- Every route except `POST /auth/login` and `POST /auth/logout` goes through `requireAuth`.
 - Never return `password_hash`. Use explicit `select`/DTOs for user data.
 - Multi-step writes (create job + history row, status change + history row, job number generation) must use `prisma.$transaction`.
 - Use a consistent error shape: `{ "error": { "code": "...", "message": "...", "details": [...] } }`.
@@ -108,6 +108,11 @@ Start with `docs/business-rules/README.md` only if you need the list of decision
 - Only offer valid next statuses in the status-change UI (derive from the same rules as the backend, but the backend still enforces them).
 - Dates: store/send ISO strings, display as `08 Oct 2026` and times as `09:10 AM`.
 - Tailwind only. No inline style objects unless unavoidable.
+- **Theme (use it for every component).** All colors, the font family and the font weights are CSS variables defined once in `client/src/index.css` and exposed to Tailwind through `@theme`.
+  - Colors: `bg-background`, `bg-surface`, `border-border`, `text-text`, `text-text-muted`, `bg-primary`, `text-on-primary`, `secondary`, `accent`, `danger` (errors). Dark mode is the `.dark` block in the same file.
+  - Font: family is `--font-family`, weights are `--fw-normal|medium|semibold|bold`. Use `font-normal`, `font-medium`, `font-semibold`, `font-bold`. The default font is Inter.
+  - **Never hardcode** hex values, Tailwind palette colors (`gray-*`, `red-*`, `white`, ...), or a font family in a component. To change the look, edit only `index.css` (for a new font, also swap the font `@import` at its top).
+  - If a needed color or weight has no token, add the token in `index.css` first, then use it.
 
 ### Testing
 - Write backend tests alongside each feature, not at the end.

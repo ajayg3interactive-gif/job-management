@@ -18,7 +18,9 @@ Fields: Email, Password, Remember Me checkbox, Login button.
 - Login endpoint is rate limited (for example 10 attempts per 15 minutes per IP).
 
 ## Protection
-- **Backend:** every route except `POST /auth/login` requires a valid JWT via `requireAuth`. Missing or invalid token returns `401`.
+- **Backend:** every route except `POST /auth/login` and `POST /auth/logout` requires a valid JWT via `requireAuth`. Missing or invalid token returns `401`.
+  - `POST /auth/logout` is the one exception: it always clears the cookie and returns `204`, even if the session already expired.
+  - `requireAuth` loads the user from the database on every request, so a deactivated or removed admin loses access immediately.
 - **Frontend:** `ProtectedRoute` redirects unauthenticated users to `/login`. This is UX only, never the real protection.
 - On app load, the client calls `GET /auth/me` to restore the session.
 - On any `401` response, the client clears its auth state and redirects to `/login`.

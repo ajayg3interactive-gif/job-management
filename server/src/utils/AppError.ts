@@ -1,4 +1,9 @@
-import { ERROR_CODES, HTTP_STATUS, type ErrorCode } from '../config/constants.js';
+import {
+  ERROR_CODES,
+  HTTP_STATUS,
+  INVALID_CREDENTIALS_MESSAGE,
+  type ErrorCode,
+} from '../config/constants.js';
 
 export interface ErrorDetail {
   field?: string;
@@ -26,5 +31,17 @@ export class AppError extends Error {
 
   static notFound(message = 'Resource not found') {
     return new AppError(HTTP_STATUS.NOT_FOUND, ERROR_CODES.NOT_FOUND, message);
+  }
+
+  static invalidCredentials() {
+    return new AppError(
+      HTTP_STATUS.UNAUTHORIZED,
+      ERROR_CODES.INVALID_CREDENTIALS,
+      INVALID_CREDENTIALS_MESSAGE,
+    );
+  }
+
+  static tooManyRequests(message = 'Too many requests, please try again later') {
+    return new AppError(HTTP_STATUS.TOO_MANY_REQUESTS, ERROR_CODES.TOO_MANY_REQUESTS, message);
   }
 }

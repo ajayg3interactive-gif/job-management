@@ -28,4 +28,7 @@ Tests: `npm test` in `server/` and `client/`. Server tests run against `TEST_DAT
 (the database name must contain "test"; the run is refused if it equals `DATABASE_URL`).
 To prepare the test database once: `DATABASE_URL=<your test url> npx prisma migrate deploy`.
 
+The client calls the API at `${VITE_API_URL}/api`, so `VITE_API_URL` is just the server origin (`http://localhost:4000`).
+Login is rate limited to 10 attempts per 15 minutes per IP (switched off under `NODE_ENV=test`).
+
 Demo admin (from the seed, change in real use): `admin@example.com` / `Admin@123`.
